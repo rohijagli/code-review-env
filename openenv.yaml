@@ -1,0 +1,27 @@
+name: code-review-env
+description: AI environment for reviewing code, detecting issues, explaining them, and suggesting fixes.
+
+version: 1.0
+
+actions:
+  type: object
+  properties:
+    issue:
+      type: string
+    explanation:
+      type: string
+
+observations:
+  type: object
+  properties:
+    code:
+      type: string
+    difficulty:
+      type: string
+
+reward:
+  type: float
+
+metadata:
+  author: Rohi Jagli, Rohan Leo
+  difficulty_levels: [easy, medium, hard]
