@@ -1,4 +1,27 @@
-import uvicorn
+from fastapi import FastAPI
+from env.environment import CodeReviewEnv
+from env.models import Action
 
-def main():
-    uvicorn.run("app:app", host="0.0.0.0", port=7860)
+app = FastAPI()
+
+env = CodeReviewEnv()
+
+@app.post("/reset")
+def reset():
+    return env.reset()
+
+@app.post("/step")
+def step(action: dict):
+    act = Action(**action)
+    obs, reward, done, info = env.step(act)
+
+    return {
+        "observation": obs,
+        "reward": reward,
+        "done": done,
+        "info": info
+    }
+
+@app.get("/")
+def root():
+    return {"message": "Code Review Env Running"}
