@@ -6,9 +6,8 @@ env = CodeReviewEnv()
 
 obs = env.reset()
 
-print("Code:\n", obs["code"])
+print("Observation:\n", obs["observation"])
 
-# If API key exists → use OpenAI
 if False:
     from openai import OpenAI
 
@@ -18,10 +17,15 @@ if False:
     )
 
     prompt = f"""
-    Review this code:
-    {obs['code']}
-    Find issues and explain them.
-    """
+Review this code:
+{obs['observation']}
+
+Return:
+1. issues
+2. explanation
+3. severity
+4. fix
+"""
 
     response = client.chat.completions.create(
         model=os.getenv("MODEL_NAME"),
@@ -30,20 +34,23 @@ if False:
 
     output = response.choices[0].message.content
 
-    action = Action(issue=output, explanation=output)
-
-# ❗ No API → fallback (VERY IMPORTANT)
+    action = Action(
+        issues=[output],
+        explanation=output,
+        severity="medium",
+        fix=output
+    )
 else:
     print("No API key found → using dummy action")
-
     action = Action(
-    issues=["assignment instead of comparison"],
-    explanation="Using = instead of == leads to incorrect condition evaluation",
-    severity="medium",
-    fix="Replace = with == in the condition"
-)
+        issues=["assignment instead of comparison", "hardcoded password", "security issue"],
+        explanation="The code contains comparison and security issues.",
+        severity="high",
+        fix="Use == for comparison and avoid hardcoded passwords."
+    )
 
-obs, reward, done, _ = env.step(action)
+next_obs, reward, done, info = env.step(action)
 
 print("Reward:", reward)
 print("Done:", done)
+print("Next observation:", next_obs)
