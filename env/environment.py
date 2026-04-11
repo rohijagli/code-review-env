@@ -16,6 +16,12 @@ class CodeReviewEnv:
                 "code": "password = input()\nif password == '1234': print('ok')",
                 "issues": ["hardcoded password", "security issue"],
                 "severity": "high"
+            },
+            {
+                "difficulty": "hard",
+                "code": "function login(u,p){ if(u==admin && p==123){ return true; }}",
+                "issues": ["hardcoded credentials", "no validation", "security flaw"],
+                "severity": "high"
             }
         ]
         self.current_task = None
@@ -24,7 +30,6 @@ class CodeReviewEnv:
     def reset(self):
         self.current_task = random.choice(self.tasks)
         self.done = False
-
         return {
             "observation": self.current_task["code"],
             "reward": 0.0,
@@ -39,12 +44,7 @@ class CodeReviewEnv:
         reward = grade(self.current_task, action)
         self.done = True
 
-        return (
-            {},
-            reward,
-            True,
-            {}
-        )
+        return {}, reward, True, {}
 
     def state(self):
         return {
