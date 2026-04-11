@@ -3,8 +3,7 @@ from env.models import Action
 
 def main():
     env = CodeReviewEnv()
-
-    obs = env.reset()
+    env.reset()
 
     print("[START] task=code_review_env", flush=True)
 
@@ -15,7 +14,7 @@ def main():
         fix="Use == for comparison and avoid hardcoded passwords."
     )
 
-    next_obs, reward, done, info = env.step(action)
+    _, reward, _, _ = env.step(action)
 
     print(f"[STEP] step=1 reward={reward}", flush=True)
     print(f"[END] task=code_review_env score={reward} steps=1", flush=True)
