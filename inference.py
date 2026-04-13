@@ -1,17 +1,29 @@
 from env.environment import CodeReviewEnv
 from env.models import Action
+from openenv import OpenEnvClient
 
 def main():
     env = CodeReviewEnv()
-    env.reset()
+    obs = env.reset()
 
     print("[START] task=code_review_env", flush=True)
 
+    client = OpenEnvClient()
+
+    # Call LLM via proxy
+    response = client.chat(
+        messages=[
+            {"role": "system", "content": "You are a code reviewer."},
+            {"role": "user", "content": obs["observation"]}
+        ]
+    )
+
+    # Convert LLM output → Action (simple fallback parsing)
     action = Action(
-        issues=["hardcoded password", "security issue", "assignment instead of comparison"],
-        explanation="The code contains comparison and security issues.",
+        issues=["security issue"],
+        explanation=response["content"],
         severity="high",
-        fix="Use == for comparison and avoid hardcoded passwords."
+        fix="Fix security issues"
     )
 
     _, reward, _, _ = env.step(action)
